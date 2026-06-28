@@ -5,6 +5,7 @@ interface Props {
   profiles: Profile[]
   onConnect: (profile: Profile) => void
   onAdd: () => void
+  onEdit: (profile: Profile) => void
   onDelete: (id: string) => void
 }
 
@@ -14,7 +15,13 @@ const AUTH_BADGE: Record<Profile['auth'], string> = {
   key: 'key'
 }
 
-export default function Sidebar({ profiles, onConnect, onAdd, onDelete }: Props): JSX.Element {
+export default function Sidebar({
+  profiles,
+  onConnect,
+  onAdd,
+  onEdit,
+  onDelete
+}: Props): JSX.Element {
   const [query, setQuery] = useState('')
 
   const filtered = useMemo(() => {
@@ -28,10 +35,12 @@ export default function Sidebar({ profiles, onConnect, onAdd, onDelete }: Props)
   return (
     <aside className="flex w-60 shrink-0 flex-col border-r border-border bg-bg-alt">
       <div className="flex items-center justify-between px-3.5 py-2.5">
-        <span className="text-xs font-semibold uppercase tracking-wider text-dim">Sessions</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-dim">
+          Connections
+        </span>
         <button
           onClick={onAdd}
-          title="New session"
+          title="New connection"
           className="grid h-6 w-6 place-items-center rounded text-base text-dim hover:bg-surface hover:text-content"
         >
           +
@@ -43,7 +52,7 @@ export default function Sidebar({ profiles, onConnect, onAdd, onDelete }: Props)
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search sessions…"
+          placeholder="Search connections…"
           className="w-full rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs text-content outline-none placeholder:text-dim/60 focus:border-accent"
         />
       </div>
@@ -69,22 +78,35 @@ export default function Sidebar({ profiles, onConnect, onAdd, onDelete }: Props)
                 {p.port !== 22 ? `:${p.port}` : ''}
               </div>
             </div>
-            <button
-              title="Delete"
-              onClick={(e) => {
-                e.stopPropagation()
-                onDelete(p.id)
-              }}
-              className="shrink-0 rounded px-1 text-xs text-dim opacity-0 hover:text-danger group-hover:opacity-100"
-            >
-              ✕
-            </button>
+
+            <div className="flex shrink-0 items-center opacity-0 group-hover:opacity-100">
+              <button
+                title="Edit"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onEdit(p)
+                }}
+                className="rounded px-1 text-xs text-dim hover:text-accent"
+              >
+                ✎
+              </button>
+              <button
+                title="Delete"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onDelete(p.id)
+                }}
+                className="rounded px-1 text-xs text-dim hover:text-danger"
+              >
+                ✕
+              </button>
+            </div>
           </li>
         ))}
 
         {filtered.length === 0 && (
           <li className="px-3.5 py-4 text-xs text-dim">
-            {profiles.length === 0 ? 'No sessions yet. Click + to add one.' : 'No matches.'}
+            {profiles.length === 0 ? 'No connections yet. Click + to add one.' : 'No matches.'}
           </li>
         )}
       </ul>

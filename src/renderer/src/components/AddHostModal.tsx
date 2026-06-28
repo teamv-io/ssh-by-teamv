@@ -3,6 +3,8 @@ import type { AuthMethod, Profile } from '../types'
 
 interface Props {
   open: boolean
+  /** When set, the dialog edits this profile instead of creating a new one. */
+  initial?: Profile | null
   onClose: () => void
   onSave: (profile: Profile) => void
 }
@@ -30,16 +32,18 @@ const fieldCls =
 
 const labelCls = 'flex flex-col gap-1 text-xs text-dim'
 
-export default function AddHostModal({ open, onClose, onSave }: Props): JSX.Element | null {
+export default function AddHostModal({ open, initial, onClose, onSave }: Props): JSX.Element | null {
   const [draft, setDraft] = useState<Profile>(blank())
   const firstFieldRef = useRef<HTMLInputElement>(null)
+  const isEdit = !!initial
 
+  // Seed the form whenever the dialog opens.
   useEffect(() => {
     if (open) {
-      setDraft(blank())
+      setDraft(initial ? { ...initial, password: '' } : blank())
       setTimeout(() => firstFieldRef.current?.focus(), 0)
     }
-  }, [open])
+  }, [open, initial])
 
   useEffect(() => {
     if (!open) return
@@ -57,11 +61,12 @@ export default function AddHostModal({ open, onClose, onSave }: Props): JSX.Elem
     if (!draft.host.trim()) return
     onSave({
       ...draft,
-      id: `p_${Date.now()}`,
+      id: initial?.id ?? `p_${Date.now()}`,
       name: draft.name.trim() || draft.host.trim(),
       host: draft.host.trim(),
       username: draft.username.trim(),
       keyPath: draft.auth === 'key' ? draft.keyPath?.trim() || undefined : undefined,
+      // Empty password on an existing password-host means "keep the saved one".
       password: draft.auth === 'password' ? draft.password : undefined,
       port: Number(draft.port) || 22
     })
@@ -73,6 +78,8 @@ export default function AddHostModal({ open, onClose, onSave }: Props): JSX.Elem
     if (path) setDraft((d) => ({ ...d, keyPath: path }))
   }
 
+  const passwordKept = isEdit && initial?.auth === 'password' && initial?.hasPassword
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
@@ -83,7 +90,9 @@ export default function AddHostModal({ open, onClose, onSave }: Props): JSX.Elem
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <h2 className="text-sm font-semibold text-content">New SSH Session</h2>
+          <h2 className="text-sm font-semibold text-content">
+            {isEdit ? 'Edit Connection' : 'New Connection'}
+          </h2>
           <button
             className="grid h-6 w-6 place-items-center rounded text-dim hover:bg-surface hover:text-content"
             onClick={onClose}
@@ -134,7 +143,6 @@ export default function AddHostModal({ open, onClose, onSave }: Props): JSX.Elem
             </label>
           </div>
 
-          {/* Auth method segmented control */}
           <div className={labelCls}>
             Authentication
             <div className="flex gap-1 rounded-md bg-surface p-1">
@@ -162,12 +170,14 @@ export default function AddHostModal({ open, onClose, onSave }: Props): JSX.Elem
               <input
                 type="password"
                 className={fieldCls}
-                placeholder="••••••••"
+                placeholder={passwordKept ? '•••••••• (unchanged)' : '••••••••'}
                 value={draft.password}
                 onChange={(e) => setDraft({ ...draft, password: e.target.value })}
               />
               <span className="text-[10px] text-dim/70">
-                Stored encrypted via the macOS Keychain.
+                {passwordKept
+                  ? 'Leave blank to keep the saved password. Stored encrypted via the macOS Keychain.'
+                  : 'Stored encrypted via the macOS Keychain.'}
               </span>
             </label>
           )}
@@ -212,7 +222,7 @@ export default function AddHostModal({ open, onClose, onSave }: Props): JSX.Elem
               disabled={!draft.host.trim()}
               className="rounded-md bg-accent px-4 py-1.5 text-sm font-semibold text-[#11111b] disabled:opacity-40"
             >
-              Save session
+              {isEdit ? 'Save changes' : 'Save connection'}
             </button>
           </div>
         </form>

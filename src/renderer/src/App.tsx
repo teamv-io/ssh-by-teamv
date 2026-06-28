@@ -9,6 +9,7 @@ export default function App(): JSX.Element {
   const [sessions, setSessions] = useState<Session[]>([])
   const [activeId, setActiveId] = useState<string | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
+  const [editing, setEditing] = useState<Profile | null>(null)
 
   useEffect(() => {
     window.api.profiles.load().then(setProfiles)
@@ -19,8 +20,20 @@ export default function App(): JSX.Element {
     window.api.profiles.save(next)
   }
 
-  function addProfile(p: Profile): void {
-    persist([...profiles, p])
+  /** Insert a new connection or update an existing one (matched by id). */
+  function saveProfile(p: Profile): void {
+    const exists = profiles.some((x) => x.id === p.id)
+    persist(exists ? profiles.map((x) => (x.id === p.id ? p : x)) : [...profiles, p])
+  }
+
+  function openAdd(): void {
+    setEditing(null)
+    setModalOpen(true)
+  }
+
+  function openEdit(p: Profile): void {
+    setEditing(p)
+    setModalOpen(true)
   }
 
   function deleteProfile(id: string): void {
@@ -46,7 +59,8 @@ export default function App(): JSX.Element {
       <Sidebar
         profiles={profiles}
         onConnect={connect}
-        onAdd={() => setModalOpen(true)}
+        onAdd={openAdd}
+        onEdit={openEdit}
         onDelete={deleteProfile}
       />
 
@@ -84,13 +98,18 @@ export default function App(): JSX.Element {
           {sessions.length === 0 && (
             <div className="flex h-full flex-col items-center justify-center gap-2 text-dim">
               <h1 className="text-xl text-content">SSH by TeamV</h1>
-              <p className="text-sm">Double-click a session in the sidebar to connect.</p>
+              <p className="text-sm">Double-click a connection in the sidebar to start.</p>
             </div>
           )}
         </div>
       </main>
 
-      <AddHostModal open={modalOpen} onClose={() => setModalOpen(false)} onSave={addProfile} />
+      <AddHostModal
+        open={modalOpen}
+        initial={editing}
+        onClose={() => setModalOpen(false)}
+        onSave={saveProfile}
+      />
     </div>
   )
 }

@@ -137,8 +137,11 @@ function registerIpc(): void {
 
     const merged: StoredProfile[] = incoming.map((p) => {
       const prev = byId.get(p.id)
-      let password = prev?.password
-      if (p.password && p.password.length > 0) password = encryptPw(p.password)
+      let password: string | undefined
+      if (p.auth === 'password') {
+        // Keep the previously stored secret unless the user typed a new one.
+        password = p.password && p.password.length > 0 ? encryptPw(p.password) : prev?.password
+      }
 
       const clean: StoredProfile = {
         id: p.id,
