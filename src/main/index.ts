@@ -140,6 +140,13 @@ function sshArgs(p: StoredProfile): string[] {
   return args
 }
 
+/** Send to the renderer only if the window and its webContents are still alive. */
+function sendToRenderer(channel: string, payload: unknown): void {
+  if (mainWindow && !mainWindow.isDestroyed() && !mainWindow.webContents.isDestroyed()) {
+    mainWindow.webContents.send(channel, payload)
+  }
+}
+
 function createPty(
   id: string,
   profile: StoredProfile,
@@ -159,9 +166,9 @@ function createPty(
     env: process.env as { [key: string]: string }
   })
 
-  term.onData((data) => mainWindow?.webContents.send('pty:data', { id, data }))
+  term.onData((data) => sendToRenderer('pty:data', { id, data }))
   term.onExit(({ exitCode }) => {
-    mainWindow?.webContents.send('pty:exit', { id, exitCode })
+    sendToRenderer('pty:exit', { id, exitCode })
     ptys.delete(id)
   })
 
@@ -393,6 +400,22 @@ function createWindow(): void {
   })
 
   mainWindow.on('ready-to-show', () => mainWindow?.show())
+
+  // Tear down ptys before the webContents goes away, then drop the reference.
+  mainWindow.on('close', () => {
+    ptys.forEach((p) => {
+      try {
+        p.kill()
+      } catch {
+        /* already gone */
+      }
+    })
+    ptys.clear()
+  })
+  mainWindow.on('closed', () => {
+    mainWindow = null
+  })
+
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url)
     return { action: 'deny' }
