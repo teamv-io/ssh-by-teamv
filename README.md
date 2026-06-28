@@ -1,4 +1,4 @@
-# SSH by TeamV
+# SSH by TeamV.io
 
 A MobaXterm-style SSH client for macOS — a sidebar of saved connections and tabbed,
 PTY-backed terminals in one window. Built with **Electron + React + xterm.js**.
@@ -54,4 +54,4 @@ pnpm run build    # type-check + bundle main / preload / renderer
 
 ## License
 
-MIT © TeamV
+MIT © TeamV.io

@@ -183,7 +183,7 @@ export default function App(): JSX.Element | null {
           ))}
           {sessions.length === 0 && (
             <div className="flex h-full flex-col items-center justify-center gap-2 text-dim">
-              <h1 className="text-xl text-content">SSH by TeamV</h1>
+              <h1 className="text-xl text-content">SSH by TeamV.io</h1>
               <p className="text-sm">Click a connection in the sidebar to start.</p>
             </div>
           )}

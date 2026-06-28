@@ -1,0 +1,28 @@
+appId: io.teamv.ssh
+productName: SSH by TeamV.io
+copyright: © TeamV.io
+
+directories:
+  buildResources: build
+  output: release
+
+files:
+  - out/**
+  - package.json
+
+# node-pty ships a native .node binary that must stay outside the asar archive.
+asarUnpack:
+  - '**/node_modules/node-pty/**'
+
+mac:
+  target:
+    - target: dmg
+      arch:
+        - arm64
+  icon: build/icon.icns
+  category: public.app-category.developer-tools
+  # Local/unsigned build: ad-hoc sign so it launches on this machine.
+  identity: null
+
+dmg:
+  title: SSH by TeamV.io

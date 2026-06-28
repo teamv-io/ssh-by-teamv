@@ -46,7 +46,7 @@ export default function LockScreen({ mode, onUnlocked }: Props): JSX.Element {
         onSubmit={submit}
         className="w-[360px] max-w-[92vw] rounded-xl border border-border bg-bg-alt p-6 shadow-2xl"
       >
-        <div className="mb-1 text-center text-lg font-semibold text-content">SSH by TeamV</div>
+        <div className="mb-1 text-center text-lg font-semibold text-content">SSH by TeamV.io</div>
         <p className="mb-5 text-center text-xs text-dim">
           {mode === 'setup'
             ? 'Create a master password to encrypt your saved credentials.'

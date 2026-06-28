@@ -382,7 +382,7 @@ function createWindow(): void {
     minWidth: 720,
     minHeight: 480,
     show: false,
-    title: 'SSH by TeamV',
+    title: 'SSH by TeamV.io',
     backgroundColor: '#1e1e2e',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
