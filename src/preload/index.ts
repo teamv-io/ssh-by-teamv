@@ -1,18 +1,26 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
+type AuthMethod = 'agent' | 'password' | 'key'
+
 export interface Profile {
   id: string
   name: string
   host: string
   port: number
   username: string
+  auth: AuthMethod
   keyPath?: string
+  password?: string
+  hasPassword?: boolean
 }
 
 const api = {
   profiles: {
     load: (): Promise<Profile[]> => ipcRenderer.invoke('profiles:load'),
     save: (profiles: Profile[]): Promise<void> => ipcRenderer.invoke('profiles:save', profiles)
+  },
+  dialog: {
+    pickKey: (): Promise<string | null> => ipcRenderer.invoke('dialog:pickKey')
   },
   pty: {
     create: (id: string, profile: Profile, cols: number, rows: number): void =>

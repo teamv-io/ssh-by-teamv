@@ -84,7 +84,7 @@ export default function TerminalView({ session, active }: Props): JSX.Element {
   return (
     <div
       ref={hostRef}
-      className="terminal-host"
+      className="absolute inset-0 p-1.5"
       style={{ display: active ? 'block' : 'none' }}
     />
   )

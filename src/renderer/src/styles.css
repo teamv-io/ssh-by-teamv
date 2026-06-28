@@ -1,17 +1,15 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+@import 'tailwindcss';
 
-:root {
-  --bg: #1e1e2e;
-  --bg-alt: #181825;
-  --surface: #313244;
-  --border: #45475a;
-  --text: #cdd6f4;
-  --text-dim: #a6adc8;
-  --accent: #89b4fa;
+@theme {
+  --color-bg: #1e1e2e;
+  --color-bg-alt: #181825;
+  --color-surface: #313244;
+  --color-overlay: #45475a;
+  --color-border: #45475a;
+  --color-content: #cdd6f4;
+  --color-dim: #a6adc8;
+  --color-accent: #89b4fa;
+  --color-danger: #f38ba8;
 }
 
 html,
@@ -21,212 +19,28 @@ body,
 }
 
 body {
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  color: var(--text);
-  background: var(--bg);
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-content);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   overflow: hidden;
 }
 
-.app {
-  display: flex;
-  height: 100vh;
-}
-
-/* ---- Sidebar ---- */
-.sidebar {
-  width: 240px;
-  flex-shrink: 0;
-  background: var(--bg-alt);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  padding-top: 28px; /* clear the traffic lights */
-}
-
-.sidebar-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-dim);
-}
-
-.icon-btn {
-  background: transparent;
-  border: none;
-  color: var(--text-dim);
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 6px;
-  width: 24px;
-  height: 24px;
-  line-height: 1;
-}
-.icon-btn:hover {
-  background: var(--surface);
-  color: var(--text);
-}
-.icon-btn.delete {
-  font-size: 12px;
-  opacity: 0;
-}
-.profile-item:hover .icon-btn.delete {
-  opacity: 1;
-}
-
-.add-form {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 8px 12px 12px;
-  border-bottom: 1px solid var(--border);
-}
-.add-form input {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 6px 8px;
-  color: var(--text);
-  font-size: 12px;
-  outline: none;
-}
-.add-form input:focus {
-  border-color: var(--accent);
-}
-.add-form .row {
-  display: flex;
-  gap: 6px;
-}
-.add-form .row input {
-  flex: 1;
-  min-width: 0;
-}
-.add-form .port {
-  max-width: 64px;
-}
-.primary-btn {
-  background: var(--accent);
-  color: #11111b;
-  border: none;
-  border-radius: 6px;
-  padding: 7px;
-  font-weight: 600;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.profile-list {
-  list-style: none;
-  overflow-y: auto;
-  flex: 1;
-}
-.profile-item {
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  cursor: pointer;
-  border-bottom: 1px solid rgba(69, 71, 90, 0.4);
-}
-.profile-item:hover {
-  background: var(--surface);
-}
-.profile-info {
-  flex: 1;
-  min-width: 0;
-}
-.profile-name {
-  font-size: 13px;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.profile-sub {
-  font-size: 11px;
-  color: var(--text-dim);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.empty {
-  padding: 16px 14px;
-  font-size: 12px;
-  color: var(--text-dim);
-}
-
-/* ---- Main ---- */
-.main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.tabbar {
-  display: flex;
-  height: 36px;
-  background: var(--bg-alt);
-  border-bottom: 1px solid var(--border);
-  padding-top: 28px; /* clear the traffic lights row alignment */
-  align-items: stretch;
-  overflow-x: auto;
-}
-.tab {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 12px;
-  font-size: 12px;
-  color: var(--text-dim);
-  border-right: 1px solid var(--border);
-  cursor: pointer;
-  white-space: nowrap;
-}
-.tab.active {
-  background: var(--bg);
-  color: var(--text);
-}
-.tab-close {
-  background: transparent;
-  border: none;
-  color: inherit;
-  cursor: pointer;
-  font-size: 14px;
-  opacity: 0.6;
-}
-.tab-close:hover {
-  opacity: 1;
-}
-
-.terminal-area {
-  flex: 1;
-  position: relative;
-  background: var(--bg);
-  min-height: 0;
-}
-.terminal-host {
-  position: absolute;
-  inset: 0;
-  padding: 6px;
-}
-.terminal-host .xterm {
+/* Let xterm fill its host container. */
+.xterm,
+.xterm .xterm-viewport {
   height: 100%;
 }
 
-.welcome {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: var(--text-dim);
-  gap: 8px;
+/* Thin scrollbars to match the dark theme. */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
-.welcome h1 {
-  font-size: 22px;
-  color: var(--text);
+*::-webkit-scrollbar-thumb {
+  background: var(--color-overlay);
+  border-radius: 4px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
 }

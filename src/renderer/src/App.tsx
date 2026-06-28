@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
 import Sidebar from './components/Sidebar'
 import TerminalView from './components/Terminal'
+import AddHostModal from './components/AddHostModal'
 import type { Profile, Session } from './types'
 
 export default function App(): JSX.Element {
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [sessions, setSessions] = useState<Session[]>([])
   const [activeId, setActiveId] = useState<string | null>(null)
+  const [modalOpen, setModalOpen] = useState(false)
 
   useEffect(() => {
     window.api.profiles.load().then(setProfiles)
@@ -34,35 +36,39 @@ export default function App(): JSX.Element {
   function closeSession(id: string): void {
     setSessions((prev) => {
       const next = prev.filter((s) => s.id !== id)
-      setActiveId((cur) => (cur === id ? next[next.length - 1]?.id ?? null : cur))
+      setActiveId((cur) => (cur === id ? (next[next.length - 1]?.id ?? null) : cur))
       return next
     })
   }
 
   return (
-    <div className="app">
+    <div className="flex h-screen">
       <Sidebar
         profiles={profiles}
         onConnect={connect}
-        onAdd={addProfile}
+        onAdd={() => setModalOpen(true)}
         onDelete={deleteProfile}
       />
 
-      <main className="main">
-        <div className="tabbar">
+      <main className="flex min-w-0 flex-1 flex-col">
+        {/* Tab bar */}
+        <div className="flex h-9 items-stretch overflow-x-auto border-b border-border bg-bg-alt">
           {sessions.map((s) => (
             <div
               key={s.id}
-              className={`tab ${s.id === activeId ? 'active' : ''}`}
               onClick={() => setActiveId(s.id)}
+              className={
+                'flex cursor-pointer items-center gap-2 whitespace-nowrap border-r border-border px-3 text-xs ' +
+                (s.id === activeId ? 'bg-bg text-content' : 'text-dim hover:text-content')
+              }
             >
-              <span className="tab-title">{s.profile.name}</span>
+              <span>{s.profile.name}</span>
               <button
-                className="tab-close"
                 onClick={(e) => {
                   e.stopPropagation()
                   closeSession(s.id)
                 }}
+                className="text-sm opacity-60 hover:opacity-100"
               >
                 ×
               </button>
@@ -70,18 +76,21 @@ export default function App(): JSX.Element {
           ))}
         </div>
 
-        <div className="terminal-area">
+        {/* Terminal area */}
+        <div className="relative min-h-0 flex-1 bg-bg">
           {sessions.map((s) => (
             <TerminalView key={s.id} session={s} active={s.id === activeId} />
           ))}
           {sessions.length === 0 && (
-            <div className="welcome">
-              <h1>SSH by TeamV</h1>
-              <p>Double-click a session in the sidebar to connect.</p>
+            <div className="flex h-full flex-col items-center justify-center gap-2 text-dim">
+              <h1 className="text-xl text-content">SSH by TeamV</h1>
+              <p className="text-sm">Double-click a session in the sidebar to connect.</p>
             </div>
           )}
         </div>
       </main>
+
+      <AddHostModal open={modalOpen} onClose={() => setModalOpen(false)} onSave={addProfile} />
     </div>
   )
 }
