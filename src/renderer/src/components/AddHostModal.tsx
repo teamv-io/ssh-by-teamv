@@ -58,13 +58,17 @@ export default function AddHostModal({ open, initial, onClose, onSave }: Props):
 
   function submit(e: React.FormEvent): void {
     e.preventDefault()
-    if (!draft.host.trim()) return
+    const host = draft.host.trim()
+    if (!host) return
+    const user = draft.username.trim()
+    // Default the name to user@host (App uniquifies with a 1/2/3 suffix).
+    const name = draft.name.trim() || (user ? `${user}@${host}` : host)
     onSave({
       ...draft,
       id: initial?.id ?? `p_${Date.now()}`,
-      name: draft.name.trim() || draft.host.trim(),
-      host: draft.host.trim(),
-      username: draft.username.trim(),
+      name,
+      host,
+      username: user,
       keyPath: draft.auth === 'key' ? draft.keyPath?.trim() || undefined : undefined,
       // Empty password on an existing password-host means "keep the saved one".
       password: draft.auth === 'password' ? draft.password : undefined,

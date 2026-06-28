@@ -19,9 +19,28 @@ export interface Session {
   profile: Profile
 }
 
+export interface VaultStatus {
+  exists: boolean
+  unlocked: boolean
+}
+
 declare global {
   interface Window {
     api: {
+      vault: {
+        status: () => Promise<VaultStatus>
+        setup: (password: string) => Promise<{ ok: boolean; error?: string }>
+        unlock: (password: string) => Promise<{ ok: boolean; error?: string }>
+        lock: () => Promise<{ ok: boolean }>
+      }
+      connections: {
+        export: () => Promise<{ ok: boolean; path?: string; count?: number; error?: string }>
+        pickImport: () => Promise<string | null>
+        import: (
+          path: string,
+          password?: string
+        ) => Promise<{ ok: boolean; count?: number; needPassword?: boolean; error?: string }>
+      }
       profiles: {
         load: () => Promise<Profile[]>
         save: (profiles: Profile[]) => Promise<void>

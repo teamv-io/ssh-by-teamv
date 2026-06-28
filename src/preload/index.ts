@@ -15,6 +15,25 @@ export interface Profile {
 }
 
 const api = {
+  vault: {
+    status: (): Promise<{ exists: boolean; unlocked: boolean }> =>
+      ipcRenderer.invoke('vault:status'),
+    setup: (password: string): Promise<{ ok: boolean; error?: string }> =>
+      ipcRenderer.invoke('vault:setup', password),
+    unlock: (password: string): Promise<{ ok: boolean; error?: string }> =>
+      ipcRenderer.invoke('vault:unlock', password),
+    lock: (): Promise<{ ok: boolean }> => ipcRenderer.invoke('vault:lock')
+  },
+  connections: {
+    export: (): Promise<{ ok: boolean; path?: string; count?: number; error?: string }> =>
+      ipcRenderer.invoke('connections:export'),
+    pickImport: (): Promise<string | null> => ipcRenderer.invoke('dialog:pickImport'),
+    import: (
+      path: string,
+      password?: string
+    ): Promise<{ ok: boolean; count?: number; needPassword?: boolean; error?: string }> =>
+      ipcRenderer.invoke('connections:import', { path, password })
+  },
   profiles: {
     load: (): Promise<Profile[]> => ipcRenderer.invoke('profiles:load'),
     save: (profiles: Profile[]): Promise<void> => ipcRenderer.invoke('profiles:save', profiles)

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1e1e2e"/>
+      <stop offset="1" stop-color="#11111b"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#89b4fa"/>
+      <stop offset="1" stop-color="#74c7ec"/>
+    </linearGradient>
+  </defs>
+
+  <!-- background (full bleed, no transparency) -->
+  <rect x="0" y="0" width="1024" height="1024" fill="url(#bg)"/>
+
+  <!-- terminal window card -->
+  <rect x="168" y="216" width="688" height="592" rx="72" fill="#181825" stroke="#313244" stroke-width="6"/>
+
+  <!-- title bar dots -->
+  <circle cx="248" cy="300" r="20" fill="#f38ba8"/>
+  <circle cx="318" cy="300" r="20" fill="#f9e2af"/>
+  <circle cx="388" cy="300" r="20" fill="#a6e3a1"/>
+
+  <!-- prompt chevron -->
+  <path d="M 360 460 L 500 560 L 360 660" fill="none" stroke="url(#accent)"
+        stroke-width="48" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- prompt underscore -->
+  <rect x="560" y="628" width="180" height="40" rx="20" fill="url(#accent)"/>
+</svg>

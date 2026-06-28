@@ -6,13 +6,11 @@ interface Props {
   onConnect: (profile: Profile) => void
   onAdd: () => void
   onEdit: (profile: Profile) => void
+  onDuplicate: (profile: Profile) => void
   onDelete: (id: string) => void
-}
-
-const AUTH_BADGE: Record<Profile['auth'], string> = {
-  agent: 'agent',
-  password: 'pwd',
-  key: 'key'
+  onExport: () => void
+  onImport: () => void
+  onLock: () => void
 }
 
 export default function Sidebar({
@@ -20,7 +18,11 @@ export default function Sidebar({
   onConnect,
   onAdd,
   onEdit,
-  onDelete
+  onDuplicate,
+  onDelete,
+  onExport,
+  onImport,
+  onLock
 }: Props): JSX.Element {
   const [query, setQuery] = useState('')
 
@@ -38,13 +40,22 @@ export default function Sidebar({
         <span className="text-xs font-semibold uppercase tracking-wider text-dim">
           Connections
         </span>
-        <button
-          onClick={onAdd}
-          title="New connection"
-          className="grid h-6 w-6 place-items-center rounded text-base text-dim hover:bg-surface hover:text-content"
-        >
-          +
-        </button>
+        <div className="flex items-center gap-0.5">
+          <button
+            onClick={onLock}
+            title="Lock vault"
+            className="grid h-6 w-6 place-items-center rounded text-xs text-dim hover:bg-surface hover:text-content"
+          >
+            🔒
+          </button>
+          <button
+            onClick={onAdd}
+            title="New connection"
+            className="grid h-6 w-6 place-items-center rounded text-base text-dim hover:bg-surface hover:text-content"
+          >
+            +
+          </button>
+        </div>
       </div>
 
       {/* Search */}
@@ -62,22 +73,14 @@ export default function Sidebar({
           <li
             key={p.id}
             onClick={() => onConnect(p)}
-            onDoubleClick={() => onConnect(p)}
+            onContextMenu={(e) => {
+              e.preventDefault()
+              onDuplicate(p)
+            }}
+            title={`${p.username ? `${p.username}@` : ''}${p.host}${p.port !== 22 ? `:${p.port}` : ''}  ·  right-click to duplicate`}
             className="group flex cursor-pointer items-center gap-2 border-b border-border/40 px-3 py-2 hover:bg-surface"
           >
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5">
-                <span className="truncate text-sm font-medium text-content">{p.name}</span>
-                <span className="rounded bg-overlay/60 px-1 py-px text-[9px] uppercase text-dim">
-                  {AUTH_BADGE[p.auth]}
-                </span>
-              </div>
-              <div className="truncate text-[11px] text-dim">
-                {p.username ? `${p.username}@` : ''}
-                {p.host}
-                {p.port !== 22 ? `:${p.port}` : ''}
-              </div>
-            </div>
+            <span className="min-w-0 flex-1 truncate text-sm text-content">{p.name}</span>
 
             <div className="flex shrink-0 items-center opacity-0 group-hover:opacity-100">
               <button
@@ -110,6 +113,17 @@ export default function Sidebar({
           </li>
         )}
       </ul>
+
+      {/* Footer */}
+      <div className="flex items-center gap-2 border-t border-border px-3 py-2 text-[11px] text-dim">
+        <button onClick={onImport} className="hover:text-content" title="Import from file">
+          Import
+        </button>
+        <span className="opacity-40">·</span>
+        <button onClick={onExport} className="hover:text-content" title="Export to file">
+          Export
+        </button>
+      </div>
     </aside>
   )
 }
